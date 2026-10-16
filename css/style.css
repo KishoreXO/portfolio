@@ -140,7 +140,7 @@ h1, h2, h3, p { margin: 0; }
 .pulse { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); animation: pulse 2.4s ease-in-out infinite; }
 @keyframes pulse { 50% { opacity: 0.35; } }
 .hero__title { font-family: var(--font-display); font-weight: 500; font-size: clamp(46px, 9.5vw, 132px); line-height: 0.95; letter-spacing: -0.045em; margin-left: -0.04em; }
-.hero__line { display: block; overflow: hidden; padding-bottom: 0.06em; }
+.hero__line { display: block; overflow: hidden; padding: 0 0.06em 0.2em 0; margin-bottom: -0.14em; }
 .hero__line--outline { color: transparent; -webkit-text-stroke: 1px rgba(237, 237, 239, 0.32); }
 .char { display: inline-block; will-change: transform; }
 .hero__role { margin-top: 32px; font-size: clamp(14px, 1.3vw, 16px); color: var(--text-2); min-height: 1.6em; }
