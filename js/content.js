@@ -94,10 +94,14 @@ export const skills = [
   },
 ];
 
-export const marquee = [
-  'Python', 'LLMs', 'Agents', 'Ollama', 'Docker', 'Node.js', 'SQLite',
-  'GitHub Actions', 'Playwright', 'Mineflayer', 'vLLM', 'llama.cpp',
-];
+export const marquee = {
+  items: [
+    'Python', 'Node.js', 'LLMs', 'SQLite', 'Agents', 'Playwright',
+    'Ollama', 'GitHub Actions', 'Docker', 'Mineflayer', 'vLLM', 'llama.cpp',
+  ],
+  // Shown in white; everything else stays grey. Names must match `items` exactly.
+  highlight: ['Python', 'LLMs', 'Agents', 'Ollama', 'Docker'],
+};
 
 export const journey = [
   {

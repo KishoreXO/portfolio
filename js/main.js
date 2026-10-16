@@ -48,7 +48,9 @@ function render() {
     .join('');
   projects.forEach((p) => mountProjectVisual($(`[data-project="${p.id}"] .project__visual`), p, { reduced }));
 
-  const items = marquee.map((m) => `<span class="marquee__item">${esc(m)}</span>`).join('');
+  const items = marquee.items
+    .map((m) => `<span class="marquee__item${marquee.highlight.includes(m) ? ' is-hl' : ''}">${esc(m)}</span>`)
+    .join('');
   $('#marquee').innerHTML = items + items;
 
   $('#skillsGrid').innerHTML = skills
