@@ -85,7 +85,7 @@ function kestrel(canvas, reduced) {
 
     // stage columns
     ctx.font = MONO; ctx.textAlign = 'center';
-    const stages = [[c.pre, 'PREFILTER'], [c.llm, w < 560 ? 'MODEL' : 'DECISION MODEL'], [c.out, 'MATCHES']];
+    const stages = [[c.pre, 'PREFILTER'], [c.llm, w < 560 ? 'AI' : 'AI DECISION'], [c.out, 'MATCHES']];
     for (const [x, label] of stages) {
       ctx.setLineDash([3, 5]);
       ctx.strokeStyle = 'rgba(255,255,255,0.12)';
