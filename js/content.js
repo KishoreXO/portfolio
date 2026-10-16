@@ -10,8 +10,7 @@ export const site = {
   resume: 'assets/Kishore_Muniyasamy_CV.pdf',
   links: {
     github: 'https://github.com/KishoreXO',
-    // TODO: paste your LinkedIn profile URL here
-    linkedin: '',
+    linkedin: 'https://www.linkedin.com/in/kishore-muniyasamy-6009093aa/',
   },
   roles: [
     'AI / ML Engineer',
