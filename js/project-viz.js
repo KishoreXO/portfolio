@@ -45,7 +45,7 @@ function roundRect(ctx, x, y, w, h, r) {
   ctx.closePath();
 }
 
-/* Kestrel: jobs flow from sources → keyword prefilter → typed LLM gates → matches (score ≥ 0.85) */
+/* Kestrel: jobs flow from sources → keyword prefilter → decision-model checks → matches (score ≥ 0.85) */
 function kestrel(canvas, reduced) {
   const { ctx, state } = setupCanvas(canvas);
   const SOURCES = ['Greenhouse', 'Lever', 'Ashby', 'USAJOBS', 'Adzuna', 'RSS'];
@@ -85,7 +85,7 @@ function kestrel(canvas, reduced) {
 
     // stage columns
     ctx.font = MONO; ctx.textAlign = 'center';
-    const stages = [[c.pre, 'PREFILTER'], [c.llm, 'LLM GATES'], [c.out, 'MATCHES']];
+    const stages = [[c.pre, 'PREFILTER'], [c.llm, w < 560 ? 'MODEL' : 'DECISION MODEL'], [c.out, 'MATCHES']];
     for (const [x, label] of stages) {
       ctx.setLineDash([3, 5]);
       ctx.strokeStyle = 'rgba(255,255,255,0.12)';

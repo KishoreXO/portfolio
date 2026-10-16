@@ -52,9 +52,9 @@ export const projects = [
     summary:
       'A privacy-first app that pulls openings from official job APIs and custom feeds, then surfaces only the roles that genuinely fit your profile.',
     highlights: [
-      'LLM classification pipeline: local keyword prefilter, then one typed classifier call per job with yes/no gates and weighted fit rubrics.',
+      'Decision-model filtering: a local keyword prefilter, then decision models score every job on yes/no checks and weighted fit rubrics, with an optional LLM pass for nuanced calls.',
       'Shows a job only at score ≥ 0.85 with 85% confidence, plus an explanation and skill-gap view.',
-      'Model-agnostic: hosted APIs or local models (Ollama, LM Studio, llama.cpp, vLLM). Keys never leave your machine.',
+      'LLM-ready: plug in hosted APIs or local models (Ollama, LM Studio, llama.cpp, vLLM) for deeper judgement. Keys never leave your machine.',
       'Preference learning from feedback, application tracker, and robots.txt-respecting, rate-limited, audited scraping.',
     ],
   },
@@ -82,7 +82,7 @@ export const skills = [
   { group: 'Languages', items: ['Python', 'JavaScript'] },
   {
     group: 'AI / ML',
-    items: ['LLM integration', 'Typed classification pipelines', 'Autonomous agents', 'Local models (Ollama, LM Studio)'],
+    items: ['LLM integration', 'Decision models', 'Autonomous agents', 'Local models (Ollama, LM Studio)'],
   },
   {
     group: 'Tools',
@@ -119,8 +119,8 @@ export const journey = [
   {
     when: 'Open source',
     title: 'Kestrel — AI job matching',
-    place: 'Python · LLM pipelines',
-    body: 'Typed LLM classification with confidence gates, local-model support, and privacy by default.',
+    place: 'Python · Decision models',
+    body: 'Decision-model job filtering with confidence thresholds, optional LLM support, and privacy by default.',
   },
   {
     when: 'Next',
