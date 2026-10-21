@@ -294,7 +294,176 @@ function mint(canvas, reduced) {
   };
 }
 
-const VIZ = { kestrel, mint };
+/* Hammertime: lap times degrading per stint, a Monte Carlo fan for the rest of the race, and the live call */
+function hammertime(canvas, reduced) {
+  const { ctx, state } = setupCanvas(canvas);
+  const LAPS = 57, PIT = 22, WIN = [18, 24];
+  const TYRE = { M: { deg: 0.09, off: 0, col: '255,214,102' }, H: { deg: 0.05, off: 0.3, col: '236,240,245' } };
+  const T_MIN = 90.8, T_MAX = 94.8;
+  const pace = (lap, deg, pit) => {
+    const onH = lap > pit, age = onH ? lap - pit - 1 : lap - 1;
+    const t = onH ? TYRE.H : TYRE.M;
+    return 92 + t.off + (onH ? TYRE.H.deg : deg) * age - 0.03 * lap;
+  };
+  let noise = [], lap = reduced ? 30 : 1, lapT = 0, traces = [], band = [], fanA = 0, t = 0;
+
+  function newRace() {
+    noise = Array.from({ length: LAPS + 1 }, () => (Math.random() - 0.5) * 0.28);
+  }
+  function simulate() {
+    traces = [];
+    for (let k = 0; k < 28; k++) {
+      const deg = TYRE.M.deg * (0.8 + Math.random() * 0.4);
+      const pit = lap >= PIT ? PIT : Math.max(lap + 1, PIT + Math.round((Math.random() - 0.5) * 4));
+      const tr = [];
+      for (let l = lap; l <= LAPS; l++) tr.push(l === lap ? pace(l, TYRE.M.deg, PIT) + noise[l] : pace(l, deg, pit) + (Math.random() - 0.5) * 0.3);
+      traces.push(tr);
+    }
+    band = traces[0].map((_, i) => {
+      const v = traces.map((tr) => tr[i]).sort((a, b) => a - b);
+      return [v[Math.floor(v.length * 0.1)], v[Math.floor(v.length * 0.5)], v[Math.ceil(v.length * 0.9) - 1]];
+    });
+    fanA = 0;
+  }
+  newRace(); simulate();
+
+  const call = () =>
+    lap === PIT ? ['BOX NOW', ACCENT] :
+    lap >= WIN[0] && lap < PIT ? ['WINDOW OPEN', '255,190,110'] :
+    ['STAY OUT', '163,171,184'];
+
+  return function draw(dt) {
+    const { w, h } = state;
+    const narrow = w < 520;
+    ctx.clearRect(0, 0, w, h);
+    t += dt; lapT += dt; fanA = Math.min(1, fanA + dt / 350);
+    if (lapT > (lap === PIT ? 1400 : 480)) {
+      lapT = 0; lap++;
+      if (lap > LAPS + 6) { lap = 1; newRace(); }
+      if (lap <= LAPS) simulate();
+    }
+    const L = Math.min(lap, LAPS);
+
+    // grid backdrop
+    ctx.strokeStyle = 'rgba(255,255,255,0.035)';
+    ctx.lineWidth = 1;
+    for (let x = 0; x < w; x += 28) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, h); ctx.stroke(); }
+    for (let y = 0; y < h; y += 28) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke(); }
+
+    const pad = 22, top = Math.max(h * 0.27, 112), bottom = h - 48;
+    const X = (l) => pad + ((l - 1) / (LAPS - 1)) * (w - pad * 2);
+    const Y = (s) => bottom - ((s - T_MIN) / (T_MAX - T_MIN)) * (bottom - top);
+
+    // header: lap counter, tyre, call badge
+    ctx.font = MONO; ctx.textAlign = 'left';
+    ctx.fillStyle = 'rgba(163,171,184,0.9)';
+    ctx.fillText(`LAP ${String(L).padStart(2, '0')}/${LAPS}`, pad, 66);
+    const onH = L > PIT, tyre = onH ? 'H' : 'M';
+    const age = onH ? L - PIT - 1 : L - 1;
+    const tx = pad + ctx.measureText(`LAP 00/${LAPS}`).width + 22;
+    ctx.strokeStyle = `rgba(${TYRE[tyre].col},1)`; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.arc(tx, 62, 7, 0, Math.PI * 2); ctx.stroke();
+    ctx.lineWidth = 1;
+    ctx.fillStyle = `rgba(${TYRE[tyre].col},1)`; ctx.textAlign = 'center';
+    ctx.font = '600 9px "JetBrains Mono", monospace';
+    ctx.fillText(tyre, tx, 65);
+    ctx.font = MONO; ctx.textAlign = 'left';
+    ctx.fillStyle = 'rgba(107,115,128,1)';
+    ctx.fillText(`age ${age}`, tx + 14, 66);
+
+    const [label, col] = lap > LAPS ? ['FINISHED', '163,171,184'] : call();
+    ctx.font = '600 11px "JetBrains Mono", monospace';
+    const bw = ctx.measureText(label).width + 22, bx = w - pad - bw;
+    const hot = label === 'BOX NOW';
+    if (hot) { ctx.shadowColor = `rgba(${col},0.9)`; ctx.shadowBlur = 10 + 6 * Math.sin(t / 120); }
+    ctx.fillStyle = `rgba(${col},${hot ? 0.22 : 0.1})`;
+    roundRect(ctx, bx, 51, bw, 22, 6); ctx.fill();
+    ctx.shadowBlur = 0;
+    ctx.strokeStyle = `rgba(${col},0.7)`; ctx.stroke();
+    ctx.fillStyle = `rgba(${col},1)`; ctx.textAlign = 'center';
+    ctx.fillText(label, bx + bw / 2, 66);
+    if (!narrow) {
+      ctx.font = '500 10px "JetBrains Mono", monospace'; ctx.textAlign = 'right';
+      ctx.fillStyle = hot ? `rgba(${ACCENT},1)` : 'rgba(107,115,128,1)';
+      ctx.fillText(hot ? 'CONFIRMED · models + sim agree' : 'Bayesian tyre model', bx - 12, 66);
+    }
+    ctx.font = MONO;
+
+    // pit window
+    ctx.fillStyle = 'rgba(255,190,110,0.06)';
+    ctx.fillRect(X(WIN[0]), top - 8, X(WIN[1]) - X(WIN[0]), bottom - top + 8);
+    ctx.fillStyle = 'rgba(255,190,110,0.7)'; ctx.textAlign = 'center';
+    ctx.font = '500 10px "JetBrains Mono", monospace';
+    ctx.fillText(narrow ? 'WINDOW' : 'PIT WINDOW', (X(WIN[0]) + X(WIN[1])) / 2, top - 14);
+
+    // axis
+    ctx.strokeStyle = 'rgba(255,255,255,0.12)';
+    ctx.beginPath(); ctx.moveTo(pad, bottom + 0.5); ctx.lineTo(w - pad, bottom + 0.5); ctx.stroke();
+    ctx.fillStyle = 'rgba(107,115,128,1)';
+    for (const l of [1, 10, 20, 30, 40, 50, LAPS]) {
+      ctx.fillRect(X(l), bottom, 1, 4);
+      ctx.fillText(String(l), X(l), bottom + 16);
+    }
+
+    // pit stop marker
+    if (L >= PIT) {
+      ctx.setLineDash([3, 4]);
+      ctx.strokeStyle = `rgba(${ACCENT},0.5)`;
+      ctx.beginPath(); ctx.moveTo(X(PIT), top - 4); ctx.lineTo(X(PIT), bottom); ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillStyle = `rgba(${ACCENT},1)`;
+      ctx.fillText('PIT', X(PIT), bottom - 6 - (bottom - top) * 0.02);
+    }
+
+    // Monte Carlo fan for the rest of the race
+    if (lap <= LAPS && band.length > 1) {
+      ctx.save();
+      ctx.beginPath(); ctx.rect(pad, top, w - pad * 2, bottom - top); ctx.clip();
+      ctx.globalAlpha = fanA;
+      ctx.fillStyle = `rgba(${ACCENT},0.12)`;
+      ctx.beginPath();
+      band.forEach(([lo], i) => { const x = X(L + i), y = Y(lo); i ? ctx.lineTo(x, y) : ctx.moveTo(x, y); });
+      for (let i = band.length - 1; i >= 0; i--) ctx.lineTo(X(L + i), Y(band[i][2]));
+      ctx.closePath(); ctx.fill();
+      ctx.strokeStyle = `rgba(${ACCENT},0.07)`;
+      for (const tr of traces.slice(0, 14)) {
+        ctx.beginPath();
+        tr.forEach((s, i) => { const x = X(L + i), y = Y(s); i ? ctx.lineTo(x, y) : ctx.moveTo(x, y); });
+        ctx.stroke();
+      }
+      ctx.setLineDash([4, 4]);
+      ctx.strokeStyle = `rgba(${ACCENT},0.8)`;
+      ctx.beginPath();
+      band.forEach(([, mid], i) => { const x = X(L + i), y = Y(mid); i ? ctx.lineTo(x, y) : ctx.moveTo(x, y); });
+      ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.restore();
+    }
+
+    // completed laps
+    for (let l = 1; l <= L; l++) {
+      const s = pace(l, TYRE.M.deg, PIT) + noise[l];
+      const c = TYRE[l > PIT ? 'H' : 'M'].col;
+      const latest = l === L && lap <= LAPS;
+      ctx.fillStyle = `rgba(${c},${latest ? 1 : 0.75})`;
+      ctx.beginPath(); ctx.arc(X(l), Y(s), latest ? 3.5 : 2.2, 0, Math.PI * 2); ctx.fill();
+      if (latest) {
+        ctx.strokeStyle = `rgba(${c},${0.5 + 0.4 * Math.sin(t / 140)})`;
+        ctx.beginPath(); ctx.arc(X(l), Y(s), 7, 0, Math.PI * 2); ctx.stroke();
+      }
+    }
+
+    // footer legend
+    ctx.textAlign = 'left'; ctx.font = MONO;
+    ctx.fillStyle = 'rgba(107,115,128,1)';
+    const f1 = 'lap time vs lap';
+    ctx.fillText(f1, pad, h - 14);
+    ctx.fillStyle = `rgba(${ACCENT},1)`;
+    ctx.fillText(narrow ? 'Monte Carlo · 80% range' : 'Monte Carlo rest-of-race · 80% range', pad + ctx.measureText(f1).width + 18, h - 14);
+  };
+}
+
+const VIZ = { hammertime, kestrel, mint };
 
 export function mountProjectVisual(container, project, { reduced = false } = {}) {
   const canvas = document.createElement('canvas');

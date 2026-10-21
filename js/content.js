@@ -14,32 +14,52 @@ export const site = {
   },
   roles: [
     'AI / ML Engineer',
-    'Autonomous agents',
-    'LLM applications',
+    'Applied machine learning',
+    'Real-time data systems',
+    'Open-source builder',
     'CSE @ Sathyabama',
   ],
   tagline:
-    'I build autonomous agents and LLM-powered software end to end, from decision logic to tested, open-source releases.',
+    'I turn messy, real-world data into software people can rely on, from statistical models and live data pipelines to polished dashboards and tested, open-source releases.',
 };
 
 export const about = {
   lines: [
-    "I'm a Computer Science undergraduate specializing in AI and Machine Learning at Sathyabama Institute of Science and Technology.",
-    'I like systems that make their own decisions: agents that plan, react, and recover, and LLM pipelines that are typed, tested, and honest about their confidence.',
-    "I'm looking for research and project opportunities in AI, and working toward building my own model.",
+    "I'm a Computer Science undergraduate specializing in AI and Machine Learning at Sathyabama Institute of Science and Technology, Chennai.",
+    'I build across the whole stack: a live Formula 1 strategy engine with Bayesian tyre models and Monte Carlo race simulation, a self-hosted job-matching platform, and an agent that survives Minecraft on its own.',
+    'What ties it together is care for the details: honest uncertainty instead of false precision, real tests, privacy by default, and interfaces people enjoy using.',
+    "I'm looking for internships, research, and project opportunities in AI and ML, and I'm working toward training my own models.",
   ],
   stats: [
-    { value: 2, suffix: '', label: 'Open-source projects' },
-    { value: 35, suffix: '', label: 'Automated test suites' },
-    { value: 8, suffix: '', label: 'Agent progression phases' },
+    { value: 3, suffix: '', label: 'Open-source projects' },
+    { value: 97, suffix: '%', label: 'F1 strategy calls within 1 s of optimal' },
+    { value: 40, suffix: '+', label: 'Automated test suites' },
     { value: 2029, suffix: '', label: 'Graduating class' },
   ],
 };
 
 export const projects = [
   {
-    id: 'kestrel',
+    id: 'hammertime',
     index: '01',
+    name: 'Hammertime',
+    kind: 'Live Formula 1 race-strategy desk',
+    license: 'Open source · MIT',
+    repo: 'https://github.com/KishoreXO/Hammertime',
+    image: '', // e.g. 'assets/projects/hammertime.webp'
+    stack: ['Python', 'NumPy', 'FastAPI', 'React', 'TypeScript', 'Vite', 'OpenF1'],
+    summary:
+      'Follows a Formula 1 race as it happens and tells you, lap by lap, whether a car should box now, open its pit window, or stay out, on which tyre and why.',
+    highlights: [
+      'Strategy engine: fuel-corrected lap times, a Bayesian tyre-degradation model per driver, pit loss by track status, traffic-aware rejoins, and undercut maths.',
+      'Monte Carlo simulation of the rest of the race, reporting an 80% range for every plan instead of a single guess.',
+      'Measured, not claimed: 97% of decisions within 1 s of the hindsight-optimal plan in simulation, and backtested against real team stops from 2023 onwards.',
+      'Seven-tab live dashboard with a GPS track map, timing, race trace, and what-if simulator; replays any race since 2023 or follows one live.',
+    ],
+  },
+  {
+    id: 'kestrel',
+    index: '02',
     name: 'Kestrel',
     kind: 'Self-hosted AI job-matching platform',
     license: 'Open source · MIT',
@@ -59,7 +79,7 @@ export const projects = [
   },
   {
     id: 'mint',
-    index: '02',
+    index: '03',
     name: 'Mint',
     kind: 'Autonomous Minecraft survival agent',
     license: 'Open source · MIT',
@@ -78,25 +98,31 @@ export const projects = [
 ];
 
 export const skills = [
-  { group: 'Languages', items: ['Python', 'JavaScript'] },
+  { group: 'Languages', items: ['Python', 'TypeScript', 'JavaScript'] },
   {
     group: 'AI / ML',
-    items: ['LLM integration', 'Decision models', 'Autonomous agents', 'Local models (Ollama, LM Studio)'],
+    items: [
+      'Bayesian modelling',
+      'Monte Carlo simulation',
+      'LLM integration',
+      'Autonomous agents',
+      'Local models (Ollama, LM Studio)',
+    ],
   },
   {
     group: 'Tools',
-    items: ['Node.js', 'Mineflayer', 'Docker', 'Git', 'GitHub Actions', 'uv', 'SQLite', 'ESLint', 'Playwright'],
+    items: ['NumPy', 'FastAPI', 'React', 'Node.js', 'Docker', 'Git', 'GitHub Actions', 'uv', 'SQLite', 'Playwright'],
   },
   {
     group: 'Practices',
-    items: ['Automated testing', 'Web dashboards', 'Responsible data collection', 'Open-source documentation'],
+    items: ['Automated testing', 'Real-time dashboards', 'Backtesting and evaluation', 'Privacy by default', 'Open-source documentation'],
   },
 ];
 
 export const marquee = {
   items: [
-    'Python', 'Node.js', 'LLMs', 'SQLite', 'Agents', 'Playwright',
-    'Ollama', 'GitHub Actions', 'Docker', 'Mineflayer', 'vLLM', 'llama.cpp',
+    'Python', 'TypeScript', 'LLMs', 'NumPy', 'Agents', 'FastAPI',
+    'Ollama', 'React', 'Docker', 'Monte Carlo', 'Node.js', 'SQLite',
   ],
   // Shown in white; everything else stays grey. Names must match `items` exactly.
   highlight: ['Python', 'LLMs', 'Agents', 'Ollama', 'Docker'],
@@ -118,14 +144,20 @@ export const journey = [
   {
     when: 'Open source',
     title: 'Kestrel — AI job matching',
-    place: 'Python · Decision models',
-    body: 'Decision-model job filtering with confidence thresholds, optional LLM support, and privacy by default.',
+    place: 'Python · Data pipelines',
+    body: 'Pulls openings from official job APIs, scores how well each fits, and explains every match. Private by default.',
+  },
+  {
+    when: 'Open source',
+    title: 'Hammertime — live F1 strategy',
+    place: 'Python · TypeScript · Simulation',
+    body: 'A real-time race-strategy engine with Bayesian tyre models, Monte Carlo simulation, and a live dashboard.',
   },
   {
     when: 'Next',
-    title: 'Building my own AI model',
+    title: 'Training my own models',
     place: 'Research interest',
-    body: 'Autonomous agents, decision-making systems, and custom models.',
+    body: 'Applied ML, simulation, and models that know how sure they are.',
     future: true,
   },
 ];
